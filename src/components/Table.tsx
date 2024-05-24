@@ -1,4 +1,3 @@
-import { Container } from "@mui/material";
 import { Order } from "../types/Order.types";
 import {
   DataGrid,
@@ -19,24 +18,20 @@ export default function Table({
   getRowSelections,
 }: TableProps) {
   return (
-    <Container>
-      <DataGrid
-        rows={rowData}
-        columns={columnsConfig}
-        getRowId={(row) => row.orderId}
-        initialState={{
-          pagination: {
-            paginationModel: { page: 0, pageSize: 5 },
-          },
-        }}
-        pageSizeOptions={[5, 10]}
-        checkboxSelection
-        onRowSelectionModelChange={(rowSelectionModel, details) => {
-          console.log("rowSelectionModel", rowSelectionModel);
-          console.log("details", details);
-          getRowSelections(rowSelectionModel);
-        }}
-      />
-    </Container>
+    <DataGrid
+      rows={rowData}
+      columns={columnsConfig}
+      getRowId={(row) => row.orderId}
+      initialState={{
+        pagination: {
+          paginationModel: { page: 0, pageSize: 10 },
+        },
+      }}
+      pageSizeOptions={[10, 20]}
+      checkboxSelection
+      onRowSelectionModelChange={(rowSelectionModel) =>
+        getRowSelections(rowSelectionModel)
+      }
+    />
   );
 }

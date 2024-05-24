@@ -1,6 +1,7 @@
 import { type Dispatch, type SetStateAction } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import { Order } from "../types/Order.types";
+import TextField from "@mui/material/TextField";
 import "./TableSearch.css";
 
 interface TableSearchProps {
@@ -25,9 +26,14 @@ export default function TableSearch({
 
   return (
     <div id="table-search">
-      <input
-        id="table-search-input"
-        placeholder="Customer Search"
+      <TextField
+        required
+        size="small"
+        id="customer-search"
+        name="customerSearch"
+        label="Customer Search"
+        type="text"
+        fullWidth
         onChange={(e) => handleOnChange(e.target.value)}
       />
       <div className="search-button">
