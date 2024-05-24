@@ -1,0 +1,4 @@
+svg[data-testid="CheckBoxIcon"],
+svg[data-testid="IndeterminateCheckBoxIcon"] {
+  fill: var(--primary-color);
+}

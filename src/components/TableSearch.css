@@ -1,0 +1,20 @@
+#table-search {
+  display: flex;
+}
+
+#table-search-input {
+  padding: 7px;
+}
+
+.search-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--primary-color);
+  width: 30px;
+  border-radius: 0 5px 5px 0;
+}
+
+.search-button svg {
+  fill: white;
+}

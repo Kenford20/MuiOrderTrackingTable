@@ -1,0 +1,25 @@
+.nav-wrapper {
+  border-bottom: 1px solid lightgray;
+  padding: 20px 0;
+}
+
+#navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#navbar-actions {
+  display: flex;
+  gap: 10px;
+}
+
+#navbar-actions > svg {
+  cursor: pointer;
+}
+
+#logo {
+  display: flex;
+  text-decoration: none;
+  gap: 15px;
+}
