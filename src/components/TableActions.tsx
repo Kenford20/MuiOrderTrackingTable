@@ -1,26 +1,18 @@
-import { Dispatch, SetStateAction } from "react";
+import { useContext } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import TableSearch from "./TableSearch";
 import TableFilter from "./TableFilter";
-import { Order } from "../types/Order.types";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
+import { GlobalContext } from "../AppContext";
 
 interface TableActionProps {
-  orders: Order[];
-  setOpenModal: Dispatch<SetStateAction<boolean>>;
-  setOrders: Dispatch<SetStateAction<Order[]>>;
-  setFilteredOrders: Dispatch<SetStateAction<Order[]>>;
   selectedOrders: GridRowSelectionModel;
 }
 
-export default function TableActions({
-  orders,
-  setOrders,
-  setFilteredOrders,
-  setOpenModal,
-  selectedOrders,
-}: TableActionProps) {
+export default function TableActions({ selectedOrders }: TableActionProps) {
+  const { dispatch } = useContext(GlobalContext);
+
   const deleteOrders = async () => {
     const response = await fetch(
       "https://red-candidate-web.azurewebsites.net/api/Orders/Delete",
@@ -34,12 +26,10 @@ export default function TableActions({
       }
     );
     if (response.ok) {
-      setOrders((prevOrders) =>
-        prevOrders.filter((order) => !selectedOrders.includes(order.orderId))
-      );
-      setFilteredOrders((prevOrders) =>
-        prevOrders.filter((order) => !selectedOrders.includes(order.orderId))
-      );
+      dispatch({
+        type: "DELETE_ORDERS",
+        payload: selectedOrders,
+      });
     } else {
       console.log("handle error", response);
       window.alert("Failed to delete order.");
@@ -48,11 +38,11 @@ export default function TableActions({
 
   return (
     <div id="table-actions">
-      <TableSearch orders={orders} setFilteredOrders={setFilteredOrders} />
+      <TableSearch />
       <button
         type="button"
         className="table-action-buttons"
-        onClick={() => setOpenModal(true)}
+        onClick={() => dispatch({ type: "OPEN_MODAL" })}
       >
         <AddIcon fontSize="small" />
         CREATE ORDER
@@ -68,7 +58,7 @@ export default function TableActions({
         <DeleteForeverIcon fontSize="small" />
         DELETE SELECTED
       </button>
-      <TableFilter orders={orders} setFilteredOrders={setFilteredOrders} />
+      <TableFilter />
     </div>
   );
 }

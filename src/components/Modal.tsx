@@ -1,4 +1,5 @@
-import { Dispatch, SetStateAction, useState } from "react";
+import { useContext, useState } from "react";
+import { GlobalContext } from "../AppContext";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
@@ -11,7 +12,6 @@ import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import OutlinedInput from "@mui/material/OutlinedInput";
-import { Order } from "../types/Order.types";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -32,19 +32,8 @@ const orderTypes = [
   "ReturnOrder",
 ];
 
-interface ModalContainerProps {
-  open: boolean;
-  handleClose: () => void;
-  setOrders: Dispatch<SetStateAction<Order[]>>;
-  setFilteredOrders: Dispatch<SetStateAction<Order[]>>;
-}
-
-export default function ModalContainer({
-  open,
-  handleClose,
-  setOrders,
-  setFilteredOrders,
-}: ModalContainerProps) {
+export default function ModalContainer() {
+  const { state, dispatch } = useContext(GlobalContext);
   const [orderType, setOrderType] = useState<string>("");
   const handleChange = (event: SelectChangeEvent<typeof orderType>) => {
     setOrderType(event.target.value);
@@ -68,9 +57,8 @@ export default function ModalContainer({
 
     if (response.ok) {
       const newOrder = await response.json();
-      setOrders((prevOrders) => [...prevOrders, newOrder]);
-      setFilteredOrders((prevOrders) => [...prevOrders, newOrder]);
-      handleClose();
+      dispatch({ type: "ADD_ORDER", payload: newOrder });
+      dispatch({ type: "CLOSE_MODAL" });
     } else {
       console.log("trigger error state", response);
     }
@@ -78,8 +66,8 @@ export default function ModalContainer({
 
   return (
     <Dialog
-      open={open}
-      onClose={handleClose}
+      open={state.isModalOpen}
+      onClose={() => dispatch({ type: "CLOSE_MODAL" })}
       PaperProps={{
         component: "form",
         onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
@@ -132,7 +120,9 @@ export default function ModalContainer({
         </FormControl>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>Cancel</Button>
+        <Button onClick={() => dispatch({ type: "CLOSE_MODAL" })}>
+          Cancel
+        </Button>
         <Button type="submit">Create</Button>
         <Button type="submit">Save As Draft</Button>
       </DialogActions>

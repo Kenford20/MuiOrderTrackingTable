@@ -14,6 +14,8 @@ export default function Navbar() {
                 src="https://spotinc.com/wp-content/uploads/2023/12/logo.svg"
                 className="logo"
                 alt="Spot logo"
+                width={100}
+                height={30}
               />
             </a>
           </nav>

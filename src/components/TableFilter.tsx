@@ -1,11 +1,10 @@
-import { useState } from "react";
-import { type Dispatch, type SetStateAction } from "react";
+import { GlobalContext } from "../AppContext";
+import { useContext, useState } from "react";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
-import { Order } from "../types/Order.types";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -26,24 +25,18 @@ const orderTypes = [
   "ReturnOrder",
 ];
 
-interface TableFilterProps {
-  orders: Order[];
-  setFilteredOrders: Dispatch<SetStateAction<Order[]>>;
-}
-
-export default function TableFilter({
-  orders,
-  setFilteredOrders,
-}: TableFilterProps) {
+export default function TableFilter() {
   const [orderType, setOrderType] = useState<string>("");
+  const { state, dispatch } = useContext(GlobalContext);
   const handleChange = (event: SelectChangeEvent<typeof orderType>) => {
     setOrderType(event.target.value);
-    setFilteredOrders(
-      orders.filter(
+    dispatch({
+      type: "SET_FILTERED_ORDERS",
+      payload: state.orders.filter(
         (order) =>
           event.target.value === "" || order.orderType === event.target.value
-      )
-    );
+      ),
+    });
   };
 
   return (

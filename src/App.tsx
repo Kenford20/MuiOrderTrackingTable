@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { GlobalContext } from "./AppContext";
 import { type GridRowSelectionModel, type GridColDef } from "@mui/x-data-grid";
-import { Order } from "./types/Order.types";
 import { Container } from "@mui/material";
 import Navbar from "./components/Navbar";
 import ModalContainer from "./components/Modal";
@@ -25,10 +25,7 @@ const orderTableConfig: GridColDef[] = [
 ];
 
 function App() {
-  // TODO: useReducer to manage orders/filteredOrders state so dont gotta pass the setters everywhere
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
-  const [openModal, setOpenModal] = useState<boolean>(false);
+  const { state, dispatch } = useContext(GlobalContext);
   const [selectedOrders, setSelectedOrders] = useState<GridRowSelectionModel>(
     []
   );
@@ -43,10 +40,7 @@ function App() {
     })
       .then((res) => res.json())
       .catch((error) => console.error(error))
-      .then((data) => {
-        setOrders(data);
-        setFilteredOrders(data);
-      })
+      .then((data) => dispatch({ type: "SET_ORDERS", payload: data }))
       .catch((error) => console.error(error));
   }, []);
 
@@ -54,27 +48,14 @@ function App() {
     setSelectedOrders(rows);
   };
 
-  console.log(orders);
-
   return (
     <main>
       <Navbar />
-      <ModalContainer
-        open={openModal}
-        handleClose={() => setOpenModal(false)}
-        setOrders={setOrders}
-        setFilteredOrders={setFilteredOrders}
-      />
+      <ModalContainer />
       <Container>
-        <TableActions
-          orders={orders}
-          setOrders={setOrders}
-          setFilteredOrders={setFilteredOrders}
-          setOpenModal={setOpenModal}
-          selectedOrders={selectedOrders}
-        />
+        <TableActions selectedOrders={selectedOrders} />
         <Table
-          rowData={filteredOrders}
+          rowData={state.filteredOrders}
           columnsConfig={orderTableConfig}
           getRowSelections={getSelectedOrdersFromTable}
         />
