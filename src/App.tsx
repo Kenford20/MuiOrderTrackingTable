@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { type GridColDef } from "@mui/x-data-grid";
+import { type GridRowSelectionModel, type GridColDef } from "@mui/x-data-grid";
 import { Order } from "./types/Order.types";
 import { Container } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
@@ -32,6 +32,9 @@ function App() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
   const [openModal, setOpenModal] = useState<boolean>(false);
+  const [selectedOrders, setSelectedOrders] = useState<GridRowSelectionModel>(
+    []
+  );
 
   useEffect(() => {
     fetch("https://red-candidate-web.azurewebsites.net/api/Orders", {
@@ -49,6 +52,35 @@ function App() {
       })
       .catch((error) => console.error(error));
   }, []);
+
+  const getSelectedOrdersFromTable = (rows: GridRowSelectionModel) => {
+    setSelectedOrders(rows);
+  };
+
+  const deleteOrders = async () => {
+    const response = await fetch(
+      "https://red-candidate-web.azurewebsites.net/api/Orders/Delete",
+      {
+        method: "post",
+        body: JSON.stringify(selectedOrders),
+        headers: {
+          "Content-Type": "application/json",
+          ApiKey: import.meta.env.VITE_API_KEY,
+        },
+      }
+    );
+    if (response.ok) {
+      setOrders((prevOrders) =>
+        prevOrders.filter((order) => !selectedOrders.includes(order.orderId))
+      );
+      setFilteredOrders((prevOrders) =>
+        prevOrders.filter((order) => !selectedOrders.includes(order.orderId))
+      );
+    } else {
+      console.log("handle error", response);
+      window.alert("Failed to delete order.");
+    }
+  };
 
   console.log(orders);
 
@@ -72,14 +104,25 @@ function App() {
             <AddIcon fontSize="small" />
             CREATE ORDER
           </button>
-          <button type="button" className="table-action-buttons">
+          <button
+            type="button"
+            className={`table-action-buttons ${
+              selectedOrders.length === 0 && "disabled-button"
+            }`}
+            disabled={selectedOrders.length === 0}
+            onClick={deleteOrders}
+          >
             <DeleteForeverIcon fontSize="small" />
             DELETE SELECTED
           </button>
           <TableFilter orders={orders} setFilteredOrders={setFilteredOrders} />
         </div>
       </Container>
-      <Table rowData={filteredOrders} columnsConfig={orderTableConfig} />
+      <Table
+        rowData={filteredOrders}
+        columnsConfig={orderTableConfig}
+        getRowSelections={getSelectedOrdersFromTable}
+      />
     </main>
   );
 }

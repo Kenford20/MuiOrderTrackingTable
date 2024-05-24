@@ -1,14 +1,23 @@
 import { Container } from "@mui/material";
-import { DataGrid, type GridColDef } from "@mui/x-data-grid";
 import { Order } from "../types/Order.types";
+import {
+  DataGrid,
+  type GridRowSelectionModel,
+  type GridColDef,
+} from "@mui/x-data-grid";
 import "./Table.css";
 
 interface TableProps {
   rowData: Order[];
   columnsConfig: GridColDef[];
+  getRowSelections: (rows: GridRowSelectionModel) => void;
 }
 
-export default function Table({ rowData, columnsConfig }: TableProps) {
+export default function Table({
+  rowData,
+  columnsConfig,
+  getRowSelections,
+}: TableProps) {
   return (
     <Container>
       <DataGrid
@@ -22,6 +31,11 @@ export default function Table({ rowData, columnsConfig }: TableProps) {
         }}
         pageSizeOptions={[5, 10]}
         checkboxSelection
+        onRowSelectionModelChange={(rowSelectionModel, details) => {
+          console.log("rowSelectionModel", rowSelectionModel);
+          console.log("details", details);
+          getRowSelections(rowSelectionModel);
+        }}
       />
     </Container>
   );
