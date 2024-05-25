@@ -34,12 +34,9 @@ const orderTypes = [
 
 export default function ModalContainer() {
   const { state, dispatch } = useContext(GlobalContext);
-  console.log("state", state);
-  console.log("tpe", state.createOrderDraft?.orderType);
   const [orderType, setOrderType] = useState<string | undefined>(
     state.createOrderDraft?.orderType
   );
-  console.log("tpe2", orderType);
 
   const handleChange = (event: SelectChangeEvent<typeof orderType>) => {
     setOrderType(event.target.value);
