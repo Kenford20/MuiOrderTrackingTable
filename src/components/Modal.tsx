@@ -86,6 +86,7 @@ export default function ModalContainer() {
 
   return (
     <Dialog
+      id="modal-container"
       open={state.isModalOpen}
       onClose={() => dispatch({ type: "CLOSE_MODAL" })}
       PaperProps={{
@@ -142,7 +143,10 @@ export default function ModalContainer() {
         </FormControl>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => dispatch({ type: "CLOSE_MODAL" })}>
+        <Button
+          onClick={() => dispatch({ type: "CLOSE_MODAL" })}
+          data-testid="modal-cancel"
+        >
           Cancel
         </Button>
         <Button variant="contained" type="submit" value="save">

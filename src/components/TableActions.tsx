@@ -42,6 +42,7 @@ export default function TableActions({ selectedOrders }: TableActionProps) {
     <div id="table-actions">
       <TableSearch />
       <button
+        data-testid="create-order-button"
         type="button"
         className="table-action-buttons"
         onClick={() => dispatch({ type: "OPEN_MODAL" })}
@@ -50,6 +51,7 @@ export default function TableActions({ selectedOrders }: TableActionProps) {
         CREATE ORDER
       </button>
       <button
+        data-testid="delete-orders-button"
         type="button"
         className={`table-action-buttons ${
           selectedOrders.length === 0 && "disabled-button"

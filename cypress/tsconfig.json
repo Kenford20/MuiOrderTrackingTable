@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "lib": ["es5", "dom"],
-    "types": ["cypress", "node", "jest"],
+    "target": "ES2020",
+    "lib": ["ES2020", "dom"],
+    "types": ["cypress", "node"],
     "module": "commonjs",
     "moduleResolution": "node",
-    "preserveValueImports": false
+    "preserveValueImports": false,
+    "jsx": "react-jsx"
   },
   "include": ["**/*.ts"]
 }
