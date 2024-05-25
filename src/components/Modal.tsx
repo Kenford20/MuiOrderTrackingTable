@@ -1,6 +1,4 @@
-import { useContext, useState } from "react";
-import { GlobalContext } from "../AppContext";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
+import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
@@ -12,83 +10,23 @@ import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import OutlinedInput from "@mui/material/OutlinedInput";
-
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
-};
-
-const orderTypes = [
-  "Standard",
-  "SaleOrder",
-  "TransferOrder",
-  "PurchaseOrder",
-  "ReturnOrder",
-];
+import { useOrderModalActions } from "../hooks/useOrderModalActions";
 
 export default function ModalContainer() {
-  const { state, dispatch } = useContext(GlobalContext);
-  const [orderType, setOrderType] = useState<string | undefined>(
-    state.createOrderDraft?.orderType
-  );
-
-  const handleChange = (event: SelectChangeEvent<typeof orderType>) => {
-    setOrderType(event.target.value);
-  };
-
-  const handleOnSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    interface SubmitEvent extends Event {
-      submitter: HTMLButtonElement;
-    }
-    const submitButton = (event.nativeEvent as unknown as SubmitEvent)
-      .submitter;
-    const formData = new FormData(event.currentTarget);
-    const formJson = Object.fromEntries(formData.entries());
-
-    if (submitButton.value === "save") {
-      dispatch({
-        type: "SAVE_DRAFT",
-        payload: JSON.parse(JSON.stringify(formJson)),
-      });
-      sessionStorage.setItem("createOrderDraft", JSON.stringify(formJson));
-      return;
-    }
-    dispatch({ type: "SET_IS_LOADING", payload: true });
-    const response = await fetch(
-      "https://red-candidate-web.azurewebsites.net/api/Orders",
-      {
-        method: "post",
-        headers: {
-          "Content-Type": "application/json",
-          ApiKey: import.meta.env.VITE_API_KEY,
-        },
-        body: JSON.stringify(formJson),
-      }
-    );
-
-    if (response.ok) {
-      const newOrder = await response.json();
-      dispatch({ type: "ADD_ORDER", payload: newOrder });
-      dispatch({ type: "CLOSE_MODAL" });
-      sessionStorage.removeItem("createOrderDraft");
-    } else {
-      console.log("trigger error state", response);
-      window.alert("Failed to create order!");
-    }
-    dispatch({ type: "SET_IS_LOADING", payload: false });
-  };
+  const {
+    state,
+    updateOrderType,
+    handleOnSubmit,
+    menuProps,
+    orderTypes,
+    closeModal,
+  } = useOrderModalActions();
 
   return (
     <Dialog
       id="modal-container"
       open={state.isModalOpen}
-      onClose={() => dispatch({ type: "CLOSE_MODAL" })}
+      onClose={closeModal}
       PaperProps={{
         component: "form",
         onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
@@ -130,9 +68,9 @@ export default function ModalContainer() {
             name="orderType"
             id="create-order-type"
             defaultValue={state.createOrderDraft?.orderType || ""}
-            onChange={handleChange}
+            onChange={updateOrderType}
             input={<OutlinedInput label="Order Type" />}
-            MenuProps={MenuProps}
+            MenuProps={menuProps}
           >
             {orderTypes.map((orderType) => (
               <MenuItem key={orderType} value={orderType}>
@@ -143,10 +81,7 @@ export default function ModalContainer() {
         </FormControl>
       </DialogContent>
       <DialogActions>
-        <Button
-          onClick={() => dispatch({ type: "CLOSE_MODAL" })}
-          data-testid="modal-cancel"
-        >
+        <Button onClick={closeModal} data-testid="modal-cancel">
           Cancel
         </Button>
         <Button variant="contained" type="submit" value="save">
