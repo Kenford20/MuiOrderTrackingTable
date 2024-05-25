@@ -1,13 +1,13 @@
 import { useContext } from "react";
+import { GlobalContext } from "../AppContext";
+import { debounce } from "../utils";
 import SearchIcon from "@mui/icons-material/Search";
 import TextField from "@mui/material/TextField";
-import { GlobalContext } from "../AppContext";
 import "./TableSearch.css";
 
 export default function TableSearch() {
   const { state, dispatch } = useContext(GlobalContext);
-  // TODO: debounce
-  const handleOnChange = (searchText: string) => {
+  const handleOnChange = debounce((searchText: string) => {
     dispatch({
       type: "SET_FILTERED_ORDERS",
       payload: state.orders.filter(
@@ -16,7 +16,7 @@ export default function TableSearch() {
           order.customerName.toLowerCase().includes(searchText.toLowerCase())
       ),
     });
-  };
+  }, 250);
 
   return (
     <div id="table-search">
