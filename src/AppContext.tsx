@@ -6,6 +6,7 @@ interface GlobalState {
   filteredOrders: Order[];
   isLoading: boolean;
   isModalOpen: boolean;
+  createOrderDraft?: Partial<Order>;
 }
 
 const initialState: GlobalState = {
@@ -15,14 +16,14 @@ const initialState: GlobalState = {
   isModalOpen: false,
 };
 
-// interface Action {
-//   type: string;
-//   payload?: unknown;
-// }
+interface Action {
+  type: string;
+  payload?: unknown;
+}
 
 interface Store {
   state: GlobalState;
-  dispatch: Dispatch<unknown>;
+  dispatch: Dispatch<Action>;
 }
 
 export const GlobalContext = createContext<Store>({} as Store);
@@ -85,6 +86,18 @@ function reducer(state: GlobalState, action: any) {
     case "CLOSE_MODAL": {
       return {
         ...state,
+        isModalOpen: false,
+      };
+    }
+
+    case "SAVE_DRAFT": {
+      return {
+        ...state,
+        createOrderDraft: {
+          createdByUserName: action.payload.get("createdByUserName"),
+          customerName: action.payload.get("customerName"),
+          orderType: action.payload.get("orderType"),
+        },
         isModalOpen: false,
       };
     }

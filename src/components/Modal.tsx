@@ -1,5 +1,6 @@
 import { useContext, useState } from "react";
 import { GlobalContext } from "../AppContext";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
@@ -10,7 +11,6 @@ import DialogTitle from "@mui/material/DialogTitle";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
 import OutlinedInput from "@mui/material/OutlinedInput";
 
 const ITEM_HEIGHT = 48;
@@ -34,14 +34,30 @@ const orderTypes = [
 
 export default function ModalContainer() {
   const { state, dispatch } = useContext(GlobalContext);
-  const [orderType, setOrderType] = useState<string>("");
+  const [orderType, setOrderType] = useState<string>(
+    state.createOrderDraft?.orderType || ""
+  );
+
   const handleChange = (event: SelectChangeEvent<typeof orderType>) => {
     setOrderType(event.target.value);
   };
 
   const handleOnSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    interface SubmitEvent extends Event {
+      submitter: HTMLButtonElement;
+    }
+    const submitButton = (event.nativeEvent as unknown as SubmitEvent)
+      .submitter;
     const formData = new FormData(event.currentTarget);
     const formJson = Object.fromEntries(formData.entries());
+
+    if (submitButton.value === "save") {
+      dispatch({
+        type: "SAVE_DRAFT",
+        payload: formData,
+      });
+      return;
+    }
 
     const response = await fetch(
       "https://red-candidate-web.azurewebsites.net/api/Orders",
@@ -84,10 +100,11 @@ export default function ModalContainer() {
           size="small"
           margin="normal"
           id="order-creator"
-          name="createdByUsername"
+          name="createdByUserName"
           label="Full Name"
           type="text"
           fullWidth
+          defaultValue={state.createOrderDraft?.createdByUserName || ""}
         />
         <TextField
           required
@@ -98,6 +115,7 @@ export default function ModalContainer() {
           label="Company"
           type="text"
           fullWidth
+          defaultValue={state.createOrderDraft?.customerName || ""}
         />
         <FormControl sx={{ width: 250, mt: "15px" }} size="small">
           <InputLabel id="create-order-type-label">Order Type</InputLabel>
@@ -123,8 +141,17 @@ export default function ModalContainer() {
         <Button onClick={() => dispatch({ type: "CLOSE_MODAL" })}>
           Cancel
         </Button>
-        <Button type="submit">Create</Button>
-        <Button type="submit">Save As Draft</Button>
+        <Button variant="contained" type="submit" value="save">
+          Save As Draft
+        </Button>
+        <Button
+          variant="contained"
+          type="submit"
+          color="success"
+          value="create"
+        >
+          Create
+        </Button>
       </DialogActions>
     </Dialog>
   );
