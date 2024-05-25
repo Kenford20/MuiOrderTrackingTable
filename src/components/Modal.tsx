@@ -59,7 +59,7 @@ export default function ModalContainer() {
       sessionStorage.setItem("createOrderDraft", JSON.stringify(formJson));
       return;
     }
-
+    dispatch({ type: "SET_IS_LOADING", payload: true });
     const response = await fetch(
       "https://red-candidate-web.azurewebsites.net/api/Orders",
       {
@@ -81,6 +81,7 @@ export default function ModalContainer() {
       console.log("trigger error state", response);
       window.alert("Failed to create order!");
     }
+    dispatch({ type: "SET_IS_LOADING", payload: false });
   };
 
   return (

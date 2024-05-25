@@ -41,6 +41,13 @@ export function GlobalProvider({ children }: { children: React.ReactNode }) {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function reducer(state: GlobalState, action: any) {
   switch (action.type) {
+    case "SET_IS_LOADING": {
+      return {
+        ...state,
+        isLoading: action.payload,
+      };
+    }
+
     case "SET_ORDERS": {
       return {
         ...state,

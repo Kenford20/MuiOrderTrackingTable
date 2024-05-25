@@ -14,6 +14,7 @@ export default function TableActions({ selectedOrders }: TableActionProps) {
   const { dispatch } = useContext(GlobalContext);
 
   const deleteOrders = async () => {
+    dispatch({ type: "SET_IS_LOADING", payload: true });
     const response = await fetch(
       "https://red-candidate-web.azurewebsites.net/api/Orders/Delete",
       {
@@ -34,6 +35,7 @@ export default function TableActions({ selectedOrders }: TableActionProps) {
       console.log("handle error", response);
       window.alert("Failed to delete order.");
     }
+    dispatch({ type: "SET_IS_LOADING", payload: false });
   };
 
   return (

@@ -6,6 +6,7 @@ import Navbar from "./components/Navbar";
 import ModalContainer from "./components/Modal";
 import TableActions from "./components/TableActions";
 import Table from "./components/Table";
+import Loader from "./components/Loader";
 import "./App.css";
 
 const orderTableConfig: GridColDef[] = [
@@ -31,6 +32,7 @@ function App() {
   );
 
   useEffect(() => {
+    dispatch({ type: "SET_IS_LOADING", payload: true });
     fetch("https://red-candidate-web.azurewebsites.net/api/Orders", {
       method: "get",
       headers: {
@@ -41,7 +43,8 @@ function App() {
       .then((res) => res.json())
       .catch((error) => console.error(error))
       .then((data) => dispatch({ type: "SET_ORDERS", payload: data }))
-      .catch((error) => console.error(error));
+      .catch((error) => console.error(error))
+      .finally(() => dispatch({ type: "SET_IS_LOADING", payload: false }));
   }, []);
 
   useEffect(() => {
@@ -57,6 +60,7 @@ function App() {
 
   return (
     <main>
+      <Loader open={state.isLoading} />
       <Navbar />
       <ModalContainer />
       <Container>
