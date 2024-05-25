@@ -44,6 +44,13 @@ function App() {
       .catch((error) => console.error(error));
   }, []);
 
+  useEffect(() => {
+    const draft = sessionStorage.getItem("createOrderDraft");
+    if (draft) {
+      dispatch({ type: "SAVE_DRAFT", payload: JSON.parse(draft) });
+    }
+  }, []);
+
   const getSelectedOrdersFromTable = (rows: GridRowSelectionModel) => {
     setSelectedOrders(rows);
   };

@@ -34,9 +34,12 @@ const orderTypes = [
 
 export default function ModalContainer() {
   const { state, dispatch } = useContext(GlobalContext);
-  const [orderType, setOrderType] = useState<string>(
-    state.createOrderDraft?.orderType || ""
+  console.log("state", state);
+  console.log("tpe", state.createOrderDraft?.orderType);
+  const [orderType, setOrderType] = useState<string | undefined>(
+    state.createOrderDraft?.orderType
   );
+  console.log("tpe2", orderType);
 
   const handleChange = (event: SelectChangeEvent<typeof orderType>) => {
     setOrderType(event.target.value);
@@ -54,8 +57,9 @@ export default function ModalContainer() {
     if (submitButton.value === "save") {
       dispatch({
         type: "SAVE_DRAFT",
-        payload: formData,
+        payload: JSON.parse(JSON.stringify(formJson)),
       });
+      sessionStorage.setItem("createOrderDraft", JSON.stringify(formJson));
       return;
     }
 
@@ -75,8 +79,10 @@ export default function ModalContainer() {
       const newOrder = await response.json();
       dispatch({ type: "ADD_ORDER", payload: newOrder });
       dispatch({ type: "CLOSE_MODAL" });
+      sessionStorage.removeItem("createOrderDraft");
     } else {
       console.log("trigger error state", response);
+      window.alert("Failed to create order!");
     }
   };
 
@@ -124,7 +130,7 @@ export default function ModalContainer() {
             labelId="create-order-type-label"
             name="orderType"
             id="create-order-type"
-            value={orderType}
+            defaultValue={state.createOrderDraft?.orderType || ""}
             onChange={handleChange}
             input={<OutlinedInput label="Order Type" />}
             MenuProps={MenuProps}

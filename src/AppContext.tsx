@@ -61,6 +61,7 @@ function reducer(state: GlobalState, action: any) {
         ...state,
         orders: [...state.orders, action.payload],
         filteredOrders: [...state.orders, action.payload],
+        createOrderDraft: undefined,
       };
     }
 
@@ -93,11 +94,7 @@ function reducer(state: GlobalState, action: any) {
     case "SAVE_DRAFT": {
       return {
         ...state,
-        createOrderDraft: {
-          createdByUserName: action.payload.get("createdByUserName"),
-          customerName: action.payload.get("customerName"),
-          orderType: action.payload.get("orderType"),
-        },
+        createOrderDraft: action.payload,
         isModalOpen: false,
       };
     }
