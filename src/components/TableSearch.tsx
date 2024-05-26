@@ -21,7 +21,6 @@ export default function TableSearch() {
   return (
     <div id="table-search">
       <TextField
-        required
         size="small"
         id="customer-search"
         name="customerSearch"
