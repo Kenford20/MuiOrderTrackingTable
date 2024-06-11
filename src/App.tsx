@@ -7,6 +7,7 @@ import ModalContainer from "./components/Modal";
 import TableActions from "./components/TableActions";
 import Table from "./components/Table";
 import Loader from "./components/Loader";
+import { mockData } from "./MockData";
 import "./App.css";
 
 const orderTableConfig: GridColDef[] = [
@@ -42,7 +43,9 @@ function App() {
     })
       .then((res) => res.json())
       .catch((error) => console.error(error))
-      .then((data) => dispatch({ type: "SET_ORDERS", payload: data }))
+      .then(
+        (data) => dispatch({ type: "SET_ORDERS", payload: data || mockData }) // when API access is revoked or key has expired, use mock data
+      )
       .catch((error) => console.error(error))
       .finally(() => dispatch({ type: "SET_IS_LOADING", payload: false }));
   }, []);
