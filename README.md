@@ -7,4 +7,4 @@ Me while working on this challenge...
 
 
 
-### React + TypeScript + Vite
+### React + TypeScript + Vite + Material UI + Cypress
